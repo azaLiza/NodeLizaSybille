@@ -1,0 +1,356 @@
+{% extends "base.njk" %}
+
+{% block content %}
+
+  {#Bouton permettant de se connecter#}
+  <section><button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalLogin">
+    Se connecter
+  </button>
+  
+  {#Bouton permettant de s'inscrire#}
+  <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalSign">
+    S'inscrire
+  </button>
+  <br/>
+  
+  {#Tableau des tâches à faire#}
+  <h1>Tableau des tâches à faire:</h1>
+  </section>
+  <div class="col-md-10 offset-md-1">
+    <div class="card card-outline-primary mb-3 text-center">
+      <div class="card-block">
+        <blockquote class="card-blockquote">
+          <center>
+            <table id="todolist" class="table table-bordered table-hover sortable">
+              <thead>
+                <tr>
+                  <th>Tâche</th>
+                  <th>Date de début</th>
+                  <th>Date de fin</th>
+                  <th>Priorité</th>
+                  <th>Action</th>
+                  <th>Utilisateur</th>
+                </tr>
+              </thead>
+              <tbody>
+                {#Parcoure toutes les tâches une par une#}
+                {% for todo in todos %}
+                    <tr>
+                      {#Afficher uniquement les tâches à effecter#}
+                      {% if todo.state==="todo" %}
+                        {#Colore la ligne si la tâche a une priorité de 8 ou plus#}
+                        {% if todo.priority>7%}
+                          <td class="table-primary">
+                            {{ todo.label }}
+                          </td>
+                          <td class="table-primary">
+                            {{ todo.dateBegin }}
+                          </td>
+                          <td class="table-primary">
+                            {{ todo.dateEnd }}
+                          </td>
+                          <td class="table-primary">
+                            {{ todo.priority }}
+                          </td>
+                          <td class="table-primary">
+                            <a class="btn btn-warning btn-sm" href="/todo/edit/{{ todo._id }}" role="button"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                            <a class="btn btn-success btn-sm" href="/todo/validate/{{ todo._id }}" role="button"><i class="fa fa-check" aria-hidden="true"></i></a>
+                          </td>
+                          <td>                              
+                              {%for user in users%}  
+                                {% if todo.user==user._id %}
+                                  {{user.login}}
+                                {%endif%}
+                              {%endfor%}
+                            </td>
+                        {#Affiche les tâches normalement sinon#}
+                        {%else%}
+                          <td>
+                              {{ todo.label }}
+                            </td>
+                            <td>
+                              {{ todo.dateBegin }}
+                            </td>
+                            <td>
+                              {{ todo.dateEnd }}
+                            </td>
+                            <td>
+                              {{ todo.priority }}
+                            </td>
+                            <td>
+                              {#Bouton permettant de modifier la tâche#}
+                              <a class="btn btn-warning btn-sm" href="/todo/edit/{{ todo._id }}" role="button"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                              {#Bouton permettant de valider la tâche#}
+                              <a class="btn btn-success btn-sm" href="/todo/validate/{{ todo._id }}" role="button"><i class="fa fa-check" aria-hidden="true"></i></a>
+                            </td>
+                            <td>                              
+                              {%for user in users%}  
+                                {% if todo.user==user._id %}
+                                  {{user.login}}
+                                {%endif%}
+                              {%endfor%}
+                            </td>
+                          {%endif%}
+                      {% endif %}
+                    </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+
+            <br>
+
+            {#Bouton permettant d'ajouter une tâche#}
+            <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalAddTodo">
+              Ajouter une tâche
+            </button>
+            {#Bouton permettant de valider toutes les tâches#}
+            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modalValidateAllTodo">
+              Valider toutes les tâches
+            </button>
+            {#Bouton permettant de télécharger toutes les tâches en CSV#}
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalValidateCsv">
+              Télécharger en CSV
+            </button>
+           <br>
+          </center>
+        </blockquote>
+      </div>
+    </div>
+  </div>
+
+  {#Tableau des tâches effectuées#}
+  <h1>Tableau des tâches effectuées</h1>
+    <div class="col-md-10 offset-md-1">
+    <div class="card card-outline-primary mb-3 text-center">
+      <div class="card-block">
+        <blockquote class="card-blockquote">
+          <center>
+            <table id="todolist" class="table table-bordered table-hover sortable">
+              <thead>
+                <tr>
+                  <th>Tâche</th>
+                  <th>Date de début</th>
+                  <th>Date de Résolution</th>
+                  <th>Priorité</th>
+                  <th>Action</th>
+                  <th>Utilisateur</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for todo in todos %}
+                  <tr>
+                    {#Afficher uniquement les tâches effectuées#}
+                    {% if todo.state=="done" %}
+                      <td>
+                        {{ todo.label }}
+                      </td>
+                      <td>
+                        {{ todo.dateBegin }}
+                      </td>
+                      <td>
+                        {{ todo.dateEnd }}
+                      </td>
+                      <td>
+                        {{ todo.priority }}
+                      </td>
+                      <td>
+                        {#Bouton permettant de supprimer une tâche#}
+                        <a class="btn btn-danger btn-sm" href="/todo/delete/{{ todo._id }}" role="button"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                      </td>
+                      <td>                              
+                        {%for user in users%}  
+                          {% if todo.user==user._id %}
+                            {{user.login}}
+                          {%endif%}
+                        {%endfor%}
+                      </td>
+                      
+                    {% endif %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <br>
+            {#Bouton permettant de supprimer toutes les tâches effectuées#}
+            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalRemoveAllTodo">
+              Supprimer toutes les tâches effectuées
+            </button>
+          </center>
+        </blockquote>
+      </div>
+    </div>
+  </div>
+
+  {#Modal permettant de demander une confirmation avant de supprimer toutes les tâches effectuées#}
+  <div class="modal fade" id="modalRemoveAllTodo" tabindex="-1" role="dialog" aria-labelledby="modalRemoveAllTodo" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalRemoveAllTodo">Supprimer toutes les tâches ?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <center>
+                <button type="button" class="btn btn-success" data-dismiss="modal">Non</button>
+                <a class="btn btn-danger" href="/todo/delete/all" role="button">Oui</a>
+            </center>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {#Modal permettant de demander une confirmation avant de valider toutes les tâches à faire#}
+  <div class="modal fade" id="modalValidateAllTodo" tabindex="-1" role="dialog" aria-labelledby="modalValidateAllTodo" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalValidateAllTodo">Valider toutes les tâches ?</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <center>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Non</button>
+                <a class="btn btn-success" href="/todo/validate/all" role="button">Oui</a>
+            </center>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    {#Modal permettant de demander la confirmation avant télécharger en CSV#}
+    <div class="modal fade" id="modalValidateCsv" tabindex="-1" role="dialog" aria-labelledby="modalValidateCsv" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalValidateCsv">Télécharger le csv? (il se trouvera dans le dossier export de l'application)</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <center>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Non</button>
+                <a class="btn btn-success" href="/todo/convertcsv" role="button">Oui</a>
+            </center>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {#Modal permettant de renseigner ses informations pour une inscriptions#}
+  <div class="modal fade" id="modalSign" tabindex="-1" role="dialog" aria-labelledby="modalSign" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalSign">S'inscrire</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="/todo/sign/" method="post">
+            <div class="form-group">
+              <label for="inputLogin">Nom d'utilisateur :</label>
+              <input type="text" class="form-control" id="inputLogin" name="inputLogin" placeholder="Entre votre nom d'utilisateur" autofocus required>
+            </div>
+            <div class="form-group">
+              <label for="inputPassword" class="">Mot de passe :</label>
+              <input class="form-control" type="text" id="inputPassword" name="inputPassword" required>
+            </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Fermer</button>
+          <button type="submit" class="btn btn-success">Ajout</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  {#Modal permettant de renseigner ses informations pour se connecter#}
+  <div class="modal fade" id="modalLogin" tabindex="-1" role="dialog" aria-labelledby="modalLogin" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalLogin">Se connecter</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="/todo/login/" method="post">
+            <div class="form-group">
+              <label for="inputLogin">Nom d'utilisateur :</label>
+              <input type="text" class="form-control" id="inputLogin" name="inputLogin" placeholder="Entre votre nom d'utilisateur" autofocus required>
+            </div>
+            <div class="form-group">
+              <label for="inputPassword" class="">Mot de passe :</label>
+              <input class="form-control" type="text" id="inputPassword" name="inputPassword" required>
+            </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Fermer</button>
+          <button type="submit" class="btn btn-success">Se connecter</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  {#Modal permettant de renseigner les informations nécessaires pour ajouter une tâche#}
+  <div class="modal fade" id="modalAddTodo" tabindex="-1" role="dialog" aria-labelledby="modalAddTodo" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalAddTodo">Ajouter une tâche</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="/todo/add/" method="post">
+            <div class="form-group">
+              <label for="inputLabel">Nom de la nouvelle tâche :</label>
+              <input type="text" class="form-control" id="inputLabel" name="inputLabel" placeholder="Aller chercher du pain" autofocus required>
+            </div>
+            <div class="form-group">
+              <label for="inputDateBegin" class="">Début de la tâche :</label>
+              <input class="form-control" type="text" id="inputDateBegin" name="inputDateBegin" placeholder="01/01/2019" required>
+            </div>
+            <div class="form-group">
+              <label for="inputDateEnd" class="">Fin de la tâche :</label>
+              <input class="form-control" type="text" id="inputDateEnd" name="inputDateEnd" placeholder="02/01/2019">
+            </div>
+            <div class="form-group">
+              <label for="inputUser" class="">Utilisateur responsable de la tâche
+              <select name="inputUser" id="inputUser" class="form-control">
+                <option value="Aucun">Aucun</option>
+                {% for user in users %}
+                  <option value='{{user._id}}'>{{user.login}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="inputPriority" class="">Priorité de la tâche:</label>
+              <input type="range" id="inputPriority" name="inputPriority" min="0" max="10" oninput="this.nextElementSibling.value = this.value">
+              <output>5</output>
+            </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Fermer</button>
+          <button type="submit" class="btn btn-success">Ajout</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  
+{% endblock %}
+
+{% block endbody %}
+  <script src="http://www.kryogenix.org/code/browser/sorttable/sorttable.js" charset="utf-8"></script>
+{% endblock %}

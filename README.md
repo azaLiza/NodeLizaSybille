@@ -8,19 +8,27 @@ Liza Boumali
 
 Clonez l'application dans le dossier de votre choix:
 
-```shell
-git clone 
-```
+$$
+git clone https://github.com/azaLiza/NodeLizaSybille
+
 
 Déplacez vous dans le dossier créez et lancez la commande:
-```shell
+$$
 yarn install / npm install / ou grâce à la formule Brew pour MacOS
-```
+
 
 ## Lancement
 
 Dans un autre terminal, lancez mongo:
 
+$$ mongo
+Note : si mongo n'a jamais été installé auparavant la commande précèdante ne va pas être reconnue.
+Il faudrait donc installer mongo 
+$$ brew services install mongo-community
+Ensuite pour lancer le service la commande:
+$$
+brew services start mongo-community
+et stop pour l'arrêter.
 
 Dans le dossier de votre app, lancez-là:
 
